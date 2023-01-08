@@ -34,7 +34,6 @@ def get_loyalty():
 
 @app.route('/api/v1/loyalty_up', methods=['PATCH'])
 def loyalty_up():
-    #username = request.headers.get('X-User-Name')
     username = request.form['username']
     db = LoyaltyDB()
     result = db.loyalty_up(username)
