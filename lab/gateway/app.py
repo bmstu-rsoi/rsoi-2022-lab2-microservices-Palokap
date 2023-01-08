@@ -9,7 +9,6 @@ import json
 import uuid
 from curses.ascii import NUL
 
-
 port = os.environ.get('PORT')
 if port is None:
     port = 8080
@@ -24,7 +23,7 @@ def get_test():
 def not_found(error):
     return make_response(jsonify({'error': 'Not found in gateway'}), 404)
 
-#получить список отелей
+
 @app.route('/api/v1/hotels', methods=['GET'])
 def get_hotels():
     page = request.args.get('page', default=0, type= int)
@@ -32,7 +31,6 @@ def get_hotels():
     response = requests.get('http://reservation:8070/api/v1/hotels', params = {'page': page, 'size': size})
     return make_response(response.json(), 200)
 
-#получить информацию о статусе в системе лояльности
 @app.route('/api/v1/loyalty', methods=['GET'])
 def get_loyalty():
     if 'X-User-Name' not in request.headers:
@@ -41,7 +39,6 @@ def get_loyalty():
     response = requests.get('http://loyalty:8050/api/v1/loyalty', params = {'username': username})
     return make_response(response.json(), 200)
 
-#забронировать отель
 @app.route('/api/v1/reservations', methods=['POST'])
 def create_person():
     discount_computed = False
@@ -61,10 +58,8 @@ def create_person():
     if 'X-User-Name' not in request.headers:
         abort(400)
     username = request.headers.get('X-User-Name')
-    #получаем список отелей
     response_hotels = requests.get('http://reservation:8070/api/v1/hotels')
     result_hotels = response_hotels.json()
-    #узнаем статус в системе лояльности
     response_loyalty = requests.get('http://loyalty:8050/api/v1/loyalty', params = {'username': username})
     if response_loyalty.status_code == 200:
         discount = response_loyalty.json()['discount']
@@ -93,15 +88,12 @@ def create_person():
     if find_hotel_id:
         if discount_computed:
             total_price = int((days * price) - (((days * price) / 100) * discount))
-            #проводим платеж
             response_payment = requests.post('http://payment:8060/api/v1/post_payment', data = {'price': total_price})
             if response_payment.status_code == 201:
                 paymentUid = response_payment.json()['payment_uid']
                 status = response_payment.json()['status']
-                #поднимаем статус в системе лояльности
                 response_loyalty_up = requests.patch('http://loyalty:8050/api/v1/loyalty_up', data = {'username': username})
                 if response_loyalty_up.status_code == 200:
-                    #бронируем
                     reservationUid = str(uuid.uuid4())
                     reserv_dict = {
                     'reservationUid': reservationUid,
@@ -135,7 +127,6 @@ def create_person():
     else:
         return make_response(jsonify({"find_hotel_uid": False}), 400)
 
-#получить информацию по конкретному бронированию
 @app.route('/api/v1/reservations/<reservationUid>', methods=['GET'])
 def get_reservation(reservationUid):
     if 'X-User-Name' not in request.headers:
@@ -172,7 +163,6 @@ def get_reservation(reservationUid):
     else:
         return make_response(jsonify({}), 400)
 
-#удаление бронирования
 @app.route('/api/v1/reservations/<reservationUid>', methods=['DELETE'])
 def cancel_reservation(reservationUid):
     if 'X-User-Name' not in request.headers:
@@ -193,9 +183,6 @@ def cancel_reservation(reservationUid):
     else:
         return make_response(jsonify({'reservation': False}), 400)
 
-    
-
-#инормация по всем бронированиям пользователя
 @app.route('/api/v1/reservations', methods=['GET'])
 def get_reservations():
     if 'X-User-Name' not in request.headers:
@@ -222,7 +209,6 @@ def get_reservations():
 
     return make_response(jsonify(result), 200)
 
-#информация о всех бронированиях и статусе в сисеме лояльности пользователя
 @app.route('/api/v1/me', methods=['GET'])
 def me():
     if 'X-User-Name' not in request.headers:
