@@ -35,7 +35,6 @@ class ReservationDB:
         connection.close()
         return False
 
-
     def create_table_reservation(self):
         q = '''
                     CREATE TABLE reservation
