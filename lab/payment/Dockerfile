@@ -1,8 +1,22 @@
-FROM python:3.10.4
-EXPOSE 8060
+FROM python:3.9
+
+RUN pip install \
+    datetime \
+    uuid \
+    dataclasses \ 
+ 	uvicorn \
+fastapi \
+psycopg2 \
+requests 
+
+
+
+
+
+
+COPY / /app/
+
 WORKDIR /app
-COPY app.py /app
-COPY requirements.txt /app/requirements.txt
-COPY payment_db.py /app
-RUN pip install -r requirements.txt
-CMD ["python3", "app.py"]
+
+
+CMD ["python3", "Payment_Service.py" ]

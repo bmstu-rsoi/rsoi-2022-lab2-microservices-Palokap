@@ -1,8 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "./gateway",
-        "./reservation",
-        "./loyalty",
-        "./payment"
-    ]
-}

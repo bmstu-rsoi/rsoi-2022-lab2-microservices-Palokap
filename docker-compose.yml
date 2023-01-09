@@ -1,8 +1,10 @@
 version: "3"
+
 services:
+    
   postgres:
     image: library/postgres:13
-    container_name: postgres
+    container_name: postgres_lab2_bl1
     restart: on-failure
     environment:
       POSTGRES_USER: postgres
@@ -14,8 +16,69 @@ services:
     ports:
       - "5432:5432"
 
-# TODO добавить сервисы
+#  pgadmin:
+#    image: chorss/docker-pgadmin4
+#    ports:
+#        - 5050:5050
+#
+  gateway:
+    build: v2/python_v2/gateway
+#    network_mode: host
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    restart: on-failure
 
+      
+
+
+  reservation:
+    build: v2/python_v2/reservation
+    #    network_mode: host
+    ports:
+      - "8070:8070"
+    depends_on:
+      - postgres
+    restart: on-failure
+
+      
+      
+     
+
+  loyalty:
+    build: v2/python_v2/loyalty
+#    network_mode:  host
+    ports:
+      - "8050:8050"
+    depends_on:
+      - postgres
+    restart: on-failure
+
+
+#
+  payment:
+      build: v2/python_v2/payment
+#      network_mode: host
+      ports:
+        - "8060:8060"
+      depends_on:
+        - postgres
+      restart: on-failure
+
+
+#
+
+
+    
+     
+   
+   
+# TODO добавить сервисы
 
 volumes:
   db-data:
+  
+
+#
+ 

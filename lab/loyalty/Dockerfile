@@ -1,8 +1,22 @@
-FROM python:3.10.4
-EXPOSE 8050
+FROM python:3.9
+
+RUN pip install \
+    datetime \
+    uuid \
+    dataclasses \ 
+ 	uvicorn \
+fastapi \
+psycopg2 \
+requests 
+
+
+
+
+
+
+COPY / /app/
+
 WORKDIR /app
-COPY app.py /app
-COPY loyalty_db.py /app
-COPY requirements.txt /app/requirements.txt
-RUN pip install -r requirements.txt
-CMD ["python3", "app.py"]
+
+
+CMD ["python3", "Loyalty_Service.py" ]
